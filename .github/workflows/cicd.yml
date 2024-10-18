@@ -26,7 +26,7 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: [ip-172-31-17-140]
+    runs-on: self-hosted
     steps:
       - name: Pull Image from docker hub
         run: docker pull springboot-docker-helloworld:latest
