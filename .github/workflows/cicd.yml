@@ -10,9 +10,6 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v3
-        with:
-          repository: vijainirmal/test
-          path: springboot-hello-world
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
