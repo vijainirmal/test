@@ -20,17 +20,17 @@ jobs:
       - name: Login to docker hub
         run: docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{secrets.DOCKER_PASSWORD}}
       - name: Build docker image
-        run: docker build -t springboot-docker-helloworld .
-#      - name: Publish image to docker hub
-#        run: docker push springboot-docker-helloworld:latest
+        run: docker build -t vijainirmal1/springboot-docker-helloworld .
+      - name: Publish image to docker hub
+        run: docker push vijainirmal1/springboot-docker-helloworld:latest
 
   deploy:
     needs: build
     runs-on: self-hosted
     steps:
       - name: Pull Image from docker hub
-        run: docker pull springboot-docker-helloworld:latest
+        run: sudo docker pull vijainirmal1/springboot-docker-helloworld:latest
       - name: Delete old container
-        run: docker rm -f springboot-docker-helloworld-container
+        run: sudo docker rm -f springboot-docker-helloworld-container
       - name: Run docker container
-        run: docker run -d -p 8080:8080 --name springboot-docker-helloworld-container springboot-docker-helloworld
+        run: sudo docker run -d -p 8080:8080 --name springboot-docker-helloworld-container vijainirmal1/springboot-docker-helloworld
