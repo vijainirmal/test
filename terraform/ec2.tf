@@ -113,7 +113,7 @@ resource "null_resource" "cluster" {
   provisioner "remote-exec" {
     # Bootstrap script called with private_ip of each node in the clutser
     inline = [
-      "docker-install.sh ${join(" ", aws_instance.ec2_instance.private_ip)}",
+      "docker-install.sh ${aws_instance.ec2_instance.private_ip}",
     ]
   }
 }
