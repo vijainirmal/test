@@ -118,6 +118,7 @@ resource "null_resource" "cluster" {
   }
 }
 
+
 //# an empty resource block
 //resource "null_resource" "name" {
 //
