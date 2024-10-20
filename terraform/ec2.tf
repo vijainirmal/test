@@ -74,31 +74,47 @@ resource "aws_instance" "ec2_instance" {
   instance_type          = "t2.micro"
   subnet_id              = aws_default_subnet.default_az1.id
   vpc_security_group_ids = [aws_security_group.ec2_security_group.id]
-  key_name               = "ec2_key"
+  key_name               = "test-ec2-key"
 
-  # copy the docker-install.sh from the branch to the ec2 instance
-  provisioner "file" {
-    source      = file("docker-install.sh")
-    destination = "/home/ec2-user/docker-install.sh"
-  }
-
-  provisioner "remote-exec" {
-    connection {
-      type = "ssh"
-      user = "ec2-user"
-      host = "${aws_instance.ec2_instance.public_ip}"
-      private_key = "${file("~/Downloads/ec2-key.pem")}"
-      agent = false
-      timeout = "2m"
-    }
-
-    inline = [
-      "sudo chmod +x /home/ec2-user/docker-install.sh",
-      "sh /home/ec2-user/docker-install.sh",
-    ]
-  }
+//  # copy the docker-install.sh from the branch to the ec2 instance
+//  provisioner "file" {
+//    source      = file("docker-install.sh")
+//    destination = "/home/ec2-user/docker-install.sh"
+//  }
+//
+//  provisioner "remote-exec" {
+//    connection {
+//      type = "ssh"
+//      user = "ec2-user"
+//      host = "${aws_instance.ec2_instance.public_ip}"
+//      private_key = "${file("~/Downloads/ec2-key.pem")}"
+//      agent = false
+//      timeout = "2m"
+//    }
+//
+//    inline = [
+//      "sudo chmod +x /home/ec2-user/docker-install.sh",
+//      "sh /home/ec2-user/docker-install.sh",
+//    ]
+//  }
   tags = {
     Name = "Sample EC2 Instance"
+  }
+}
+
+resource "null_resource" "cluster" {
+  # Changes to any instance of the cluster requires re-provisioning
+  triggers = {
+    cluster_instance_ids = aws_instance.ec2_instance.id
+  }
+  connection {
+    host = aws_instance.ec2_instance.public_ip
+  }
+  provisioner "remote-exec" {
+    # Bootstrap script called with private_ip of each node in the clutser
+    inline = [
+      "docker-install.sh ${join(" ", aws_instance.ec2_instance.private_ip)}",
+    ]
   }
 }
 
