@@ -19,6 +19,17 @@ jobs:
         run: |
           echo "$PRIVATE_KEY" > github-ec2.pem && chmod 600 github-ec2.pem
           ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} '
+          # Now we have got the access of EC2 and we will start the deploy .
           echo "Current directory: $(pwd)"
           echo "Listing home directory:"
           ls -la ~
+          cd /home/ubuntu/<PROJECT_DIRECTORY> &&
+                        git checkout dev &&
+                        git fetch --all &&
+                        git reset --hard origin/dev &&
+                        git pull origin dev &&
+                        sudo npm i &&
+                        sudo npm run build &&
+                        sudo pm2 stop ./dist/index.js &&
+                        sudo pm2 start ./dist/index.js
+                        '
